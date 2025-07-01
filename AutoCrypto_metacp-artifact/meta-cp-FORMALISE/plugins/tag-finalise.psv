@@ -1,0 +1,408 @@
+<!DOCTYPE model SYSTEM "http://metacp.eu/meta-cp.dtd?v=0.1"><model version="0.1">
+    <sets>
+        <set id="S" tex="\Sigma^{\star}" description="Any string" hint="strings"></set>
+        <set id="B" tex="\left\{0,1\right\}" description="Booleans" hint="booleans"></set>
+        <set id="N" tex="\mathbb{N}" description="Natural numbers" hint="naturals"></set>
+        <set id="Zp" tex="\mathbb{Z}_p"></set>
+        <set id="P" tex="P" description="Plaintexts"></set>
+        <set id="C" tex="C" description="Encrypted texts"></set>
+        <set id="KP" tex="K_p" description="Set of public keys"></set>
+        <set id="KS" tex="K_s" description="Set of (secret) private keys"></set>
+        <set id="K" tex="K" description="Set of symmetric keys"></set>
+    </sets>
+    <customfunctions>
+        <function id="exp" arity="2" notation="corner-ne" hint="group-exponentiation">
+            <argset set="Zp"></argset>
+            <argset set="N"></argset>
+            <argset set="Zp"></argset>
+        </function>
+        <function id="pk" arity="1" notation="plain" hint="asym public-key">
+            <argset set="KS"></argset>
+            <argset set="KP"></argset>
+        </function>
+        <function id="aenc" arity="2" notation="plain">
+            <argset set="KP"></argset>
+            <argset set="P"></argset>
+            <argset set="C"></argset>
+        </function>
+        <function id="adec" arity="2" notation="plain">
+            <argset set="KS"></argset>
+            <argset set="C"></argset>
+            <argset set="P"></argset>
+        </function>
+        <function id="concat" arity="2" notation="infix" hint="tuple">
+            <argset set="P"></argset>
+            <argset set="P"></argset>
+            <argset set="P"></argset>
+        </function>
+        <function id="fst" arity="1" notation="plain" hint="projection|1">
+            <argset set="P"></argset>
+            <argset set="P"></argset>
+        </function>
+        <function id="snd" arity="1" notation="plain" hint="projection|2">
+            <argset set="P"></argset>
+            <argset set="P"></argset>
+        </function>
+    </customfunctions>
+    <declarations>
+        <declaration variable="t" entity="Alice" set="N"></declaration>
+        <declaration variable="v" entity="Alice" set="N"></declaration>
+        <declaration variable="s" entity="Bob" set="N"></declaration>
+        <declaration variable="w" entity="Bob" set="N"></declaration>
+        <declaration variable="m1" entity="Bob" set="S"></declaration>
+        <declaration variable="m2" entity="Alice" set="S"></declaration>
+        <declaration variable="t" entity="Alice" set="N"></declaration>
+        <declaration variable="m3" entity="Bob" set="S"></declaration>
+        <declaration variable="s" entity="Bob" set="N"></declaration>
+        <declaration variable="w" entity="Bob" set="N"></declaration>
+        <declaration variable="m4" entity="Alice" set="S"></declaration>
+        <declaration variable="t" entity="Alice" set="N"></declaration>
+        <declaration variable="v" entity="Alice" set="N"></declaration>
+        <declaration variable="h" entity="Alice" set="S" hint=""></declaration>
+        <declaration variable="h" entity="Bob" set="S" hint=""></declaration>
+        <declaration variable="t" entity="Alice" set="N"></declaration>
+        <declaration variable="v" entity="Alice" set="N"></declaration>
+        <declaration variable="s" entity="Bob" set="N"></declaration>
+        <declaration variable="w" entity="Bob" set="N"></declaration>
+        <declaration variable="m1" entity="Bob" set="S"></declaration>
+        <declaration variable="m2" entity="Alice" set="S"></declaration>
+        <declaration variable="t" entity="Alice" set="N"></declaration>
+        <declaration variable="m3" entity="Bob" set="S"></declaration>
+        <declaration variable="s" entity="Bob" set="N"></declaration>
+        <declaration variable="w" entity="Bob" set="N"></declaration>
+        <declaration variable="m4" entity="Alice" set="S"></declaration>
+        <declaration variable="t" entity="Alice" set="N"></declaration>
+        <declaration variable="v" entity="Alice" set="N"></declaration>
+    </declarations>
+    <protocol>
+        <entity id="Alice" name="Alice" desc="Alice">
+            <knowledge entity="Alice">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+            </knowledge>
+        </entity>
+        <entity id="Bob" name="Bob" desc="Bob">
+            <knowledge entity="Bob">
+                <variable id="s0" type="constant"></variable>
+                <variable id="w0" type="constant"></variable>
+            </knowledge>
+        </entity>
+        <message id="m-1" from="Alice" to="Bob">
+            <knowledge entity="Alice">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+            </knowledge>
+            <knowledge entity="Bob">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+            </knowledge>
+            <pre>
+                <assignment variable="t">
+                    <application function="t0"></application>
+                </assignment>
+                <assignment variable="v">
+                    <application function="v0"></application>
+                </assignment>
+            </pre>
+            <event type="send">
+                <variable id="Alice"></variable>
+            </event>
+            <channel></channel>
+            <event type="receive">
+                <variable id="Alice"></variable>
+            </event>
+            <post></post>
+        </message>
+        <message id="m-2" from="Bob" to="Alice">
+            <knowledge entity="Bob">
+                <variable id="s0" type="constant"></variable>
+                <variable id="w0" type="constant"></variable>
+                <variable id="Alice" type="constant"></variable>
+            </knowledge>
+            <knowledge entity="Alice">
+                <variable id="s0" type="constant"></variable>
+                <variable id="w0" type="constant"></variable>
+                <variable id="Alice" type="constant"></variable>
+            </knowledge>
+            <pre>
+                <assignment variable="s">
+                    <application function="s0"></application>
+                </assignment>
+                <assignment variable="w">
+                    <application function="w0"></application>
+                </assignment>
+                <assignment variable="m1">
+                    <application function="hash">
+                        <argument id="keyA" type="K"> </argument>
+                        <argument id="s" type="N"> </argument>
+                    </application>
+                </assignment>
+            </pre>
+            <event type="send">
+                <variable id="m1"></variable>
+            </event>
+            <channel></channel>
+            <event type="receive">
+                <variable id="m1"></variable>
+            </event>
+            <post></post>
+        </message>
+        <message id="m-3" from="Alice" to="Bob">
+            <knowledge entity="Alice">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+                <variable id="t"></variable>
+                <variable id="v"></variable>
+                <variable id="m1"></variable>
+            </knowledge>
+            <knowledge entity="Bob">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+                <variable id="t"></variable>
+                <variable id="v"></variable>
+                <variable id="m1"></variable>
+            </knowledge>
+            <pre>
+                <assignment variable="m2">
+                    <application function="if">
+                        <application function="eq">
+                            <argument id="m1" type="S"></argument>
+                            <application function="hash">
+                                <argument id="keyA" type="K"> </argument>
+                                <argument id="t" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="hash">
+                            <argument id="keyB" type="K"> </argument>
+                            <argument id="t" type="N"> </argument>
+                        </application>
+                        <application function="if">
+                            <argument id="hash" type="K"></argument>
+                            <application function="hash">
+                                <argument id="keyD" type="K"> </argument>
+                                <argument id="v" type="N"> </argument>
+                            </application>
+                        </application>
+                    </application>
+                </assignment>
+                <assignment variable="t">
+                    <application function="if">
+                        <argument id="t" type="N"> </argument>
+                        <application function="and">
+                            <argument id="not" type="B"></argument>
+                            <application function="eq">
+                                <argument id="m1" type="S"> </argument>
+                                <argument id="hash" type="K"> </argument>
+                            </application>
+                        </application>
+                        <application function="inc">
+                            <application function="inc">
+                                <argument id="inc" type="N"> </argument>
+                            </application>
+                        </application>
+                    </application>
+                </assignment>
+            </pre>
+            <event type="send">
+                <variable id="m2"></variable>
+            </event>
+            <channel></channel>
+            <event type="receive">
+                <variable id="m2"></variable>
+            </event>
+            <post></post>
+        </message>
+        <message id="m-4" from="Bob" to="Alice">
+            <knowledge entity="Bob">
+                <variable id="s0" type="constant"></variable>
+                <variable id="w0" type="constant"></variable>
+                <variable id="Alice" type="constant"></variable>
+                <variable id="s"></variable>
+                <variable id="w"></variable>
+                <variable id="m1"></variable>
+                <variable id="m2"></variable>
+            </knowledge>
+            <knowledge entity="Alice">
+                <variable id="s0" type="constant"></variable>
+                <variable id="w0" type="constant"></variable>
+                <variable id="Alice" type="constant"></variable>
+                <variable id="s"></variable>
+                <variable id="w"></variable>
+                <variable id="m1"></variable>
+                <variable id="m2"></variable>
+            </knowledge>
+            <pre>
+                <assignment variable="m3">
+                    <application function="if">
+                        <application function="eq">
+                            <argument id="m2" type="S"></argument>
+                            <application function="hash">
+                                <argument id="keyB" type="K"> </argument>
+                                <argument id="s" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="hash">
+                            <argument id="keyA" type="K"></argument>
+                            <application function="inc">
+                                <argument id="s" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="hash">
+                            <argument id="keyE" type="K"> </argument>
+                            <argument id="w" type="N"> </argument>
+                        </application>
+                    </application>
+                </assignment>
+                <assignment variable="s">
+                    <application function="if">
+                        <argument id="s" type="N"> </argument>
+                        <application function="eq">
+                            <argument id="m2" type="S"></argument>
+                            <application function="hash">
+                                <argument id="keyB" type="K"> </argument>
+                                <argument id="s" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="inc">
+                            <application function="inc">
+                                <argument id="s" type="N"> </argument>
+                            </application>
+                        </application>
+                    </application>
+                </assignment>
+                <assignment variable="w">
+                    <application function="if">
+                        <argument id="w" type="N"> </argument>
+                        <application function="not">
+                            <application function="eq">
+                                <argument id="m2" type="S"> </argument>
+                                <argument id="hash" type="K"> </argument>
+                            </application>
+                        </application>
+                        <application function="inc">
+                            <argument id="w" type="N"> </argument>
+                        </application>
+                    </application>
+                </assignment>
+            </pre>
+            <event type="send">
+                <variable id="m3"></variable>
+            </event>
+            <channel></channel>
+            <event type="receive">
+                <variable id="m3"></variable>
+            </event>
+            <post></post>
+        </message>
+        <message id="m-5" from="Alice" to="Bob">
+            <knowledge entity="Alice">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+                <variable id="t"></variable>
+                <variable id="v"></variable>
+                <variable id="m1"></variable>
+                <variable id="m2"></variable>
+                <variable id="t"></variable>
+                <variable id="m3"></variable>
+            </knowledge>
+            <knowledge entity="Bob">
+                <variable id="t0" type="constant"></variable>
+                <variable id="v0" type="constant"></variable>
+                <variable id="t"></variable>
+                <variable id="v"></variable>
+                <variable id="m1"></variable>
+                <variable id="m2"></variable>
+                <variable id="t"></variable>
+                <variable id="m3"></variable>
+            </knowledge>
+            <pre>
+                <assignment variable="m4">
+                    <application function="if">
+                        <application function="eq">
+                            <argument id="m3" type="S"></argument>
+                            <application function="hash">
+                                <argument id="keyA" type="K"> </argument>
+                                <argument id="inc" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="hash">
+                            <argument id="keyB" type="K"></argument>
+                            <application function="inc">
+                                <argument id="t" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="hash">
+                            <argument id="keyD" type="K"></argument>
+                            <application function="inc">
+                                <argument id="v" type="N"> </argument>
+                            </application>
+                        </application>
+                    </application>
+                </assignment>
+                <assignment variable="t">
+                    <application function="if">
+                        <argument id="t" type="N"> </argument>
+                        <application function="eq">
+                            <argument id="m3" type="S"></argument>
+                            <application function="hash">
+                                <argument id="keyA" type="K"> </argument>
+                                <argument id="inc" type="N"> </argument>
+                            </application>
+                        </application>
+                        <application function="inc">
+                            <application function="inc">
+                                <argument id="t" type="N"> </argument>
+                            </application>
+                        </application>
+                    </application>
+                </assignment>
+                <assignment variable="v">
+                    <application function="if">
+                        <argument id="v" type="N"> </argument>
+                        <application function="not">
+                            <application function="eq">
+                                <argument id="m3" type="S"> </argument>
+                                <argument id="hash" type="K"> </argument>
+                            </application>
+                        </application>
+                        <application function="inc">
+                            <argument id="v" type="N"> </argument>
+                        </application>
+                    </application>
+                </assignment>
+            </pre>
+            <event type="send">
+                <variable id="m4"></variable>
+            </event>
+            <channel></channel>
+            <event type="receive">
+                <variable id="m4"></variable>
+            </event>
+            <post></post>
+        </message>
+        <finalise entity="Alice" lastmessage="m-5">
+            <assignment variable="h1">
+                <application function="hash">
+                    <argument id="keyB"></argument>
+                    <argument id="inc"></argument>
+                </application>
+            </assignment>
+        </finalise>
+        <finalise entity="Bob" lastmessage="m-5">
+            <assignment variable="h2">
+                <application function="hash">
+                    <argument id="keyB"></argument>
+                    <argument id="inc"></argument>
+                </application>
+            </assignment>
+        </finalise>
+        <properties>
+            <correctness>
+                <application function="eq">
+                    <argument id="h1"></argument>
+                    <argument id="h2"></argument>
+                </application>
+            </correctness>
+        </properties>
+    </protocol>
+</model>

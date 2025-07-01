@@ -1,0 +1,77 @@
+/*
+ * This script has been automatically created by Meta-CP
+ */
+theory METACP_PROTOCOL
+begin
+
+builtins: diffie-hellman, asymmetric-encryption, hashing, symmetric-encryption, signing, bilinear-pairing, xor, multiset, revealing-signing
+
+functions: pI/0, pR/0, concat/2
+
+rule Register_pk:
+  [ Fr(~skA) ]
+  -->
+  [ !SK($A, ~skA), !PK($A, pk(~skA)), Out(pk(~skA)) ]
+
+rule Reveal_ltk:
+  [ !Ltk(A, ltkA) ] --[ RevLtk(A)    ]-> [ Out(ltkA) ]
+
+
+/* Authenticating Two Parties */
+
+  rule M_1_Sender:
+    let 
+        m1 = aenc(pkR,<~ni,$pI>) 
+        
+    in
+    [ Fr(~ni)
+      ,!SK($I,skI),!PK($R,pkR) ]
+--[ Send_M_1($I,$R,<'R','I',<m1>>) ]->
+    [ Out(<m1>),Storage_M_1_Sender($I,$R,skI,pkR,~ni,m1) ]
+   
+rule M_1_Receiver:
+          [ In(<m1>),!SK($R,skR),!PK($I,pkI)]
+        --[ Receive_M_1($R,$I,<'R','I',<m1>>) ]-> 
+        [ Storage_M_1_Receiver($R,$I,skR,pkI,m1) 
+        ]
+  rule M_2_Sender:
+    let 
+        ni = fst(adec(skR,m1)) 
+        m2 = aenc(pkI,<ni,<~nr,$pR>>) 
+        
+    in
+    [ Fr(~nr)
+      ,Storage_M_1_Receiver($R,$I,skR,pkI,m1) ]
+--[ Send_M_2($R,$I,<'I','R',<m2>>) ]->
+    [ Out(<m2>),Storage_M_2_Sender($R,$I,skR,pkI,m1,~nr,ni,m2) ]
+   
+rule M_2_Receiver:
+          [ In(<m2>),Storage_M_1_Sender($I,$R,skI,pkR,ni,m1)]
+        --[ Receive_M_2($I,$R,<'I','R',<m2>>) ]-> 
+        [ Storage_M_2_Receiver($I,$R,skI,pkR,ni,m1,m2) 
+        ]
+  rule M_3_Sender:
+    let 
+        nr = fst(snd(adec(skI,m2))) 
+        m3 = aenc(pkR,<nr,$pR>) 
+        
+    in
+    [Storage_M_2_Receiver($I,$R,skI,pkR,ni,m1,m2) ]
+--[ Send_M_3($I,$R,<'R','I',<m3>>) ]->
+    [ Out(<m3>),Storage_M_3_Sender($I,$R,skI,pkR,ni,m1,m2,nr,m3) ]
+   
+rule M_3_Receiver:
+          [ In(<m3>),Storage_M_2_Sender($R,$I,skR,pkI,m1,nr,ni,m2)]
+        --[ Receive_M_3($R,$I,<'R','I',<m3>>) ]-> 
+        [ Storage_M_3_Receiver($R,$I,skR,pkI,m1,nr,ni,m2,m3) 
+        ]
+lemma executable_protocol:
+  exists-trace
+  "
+     Ex I R m_1 #a #b m_2 #c #d m_3 #e #f.
+  Send_M_1(I,R,m_1) @ #a & Receive_M_1(R,I,m_1) @ #b & 
+  Send_M_2(R,I,m_2) @ #c & Receive_M_2(I,R,m_2) @ #d & 
+  Send_M_3(I,R,m_3) @ #e & Receive_M_3(R,I,m_3) @ #f
+  "
+      
+end

@@ -1,0 +1,63 @@
+(*
+ * This script has been automatically created by Meta-CP
+ * 
+ * Modeller: Meta-CP
+ * Expert Refiner: |your-name-or-your-group-whatever|
+ * Date: |today?|
+ * 
+ * Description: Exchange a long term secret key
+ *)
+set attacker = active.
+
+type host.
+type N.
+type Zp.
+const g: Zp.
+        
+const p: N.
+        
+fun exp(Zp, N): Zp.
+
+
+
+
+equation forall a: N, b: N; exp(exp(g, b), a) = exp(exp(g, a), b).
+
+
+(* Insecure channel *)
+free c: channel.
+
+(* Entities *)
+const A: host.
+const B: host.
+
+(* Correctness *)
+table finalA(Zp).
+table finalB(Zp).
+event correctness(Zp, Zp).
+query idm80: Zp; event(correctness(idm80, idm80)) ==> true = true.
+let agreement = 
+  get finalA(kA) in
+  get finalB(kB) in
+  event correctness(kA, kB).
+
+(* Entity A *)
+let process_A =
+  new x: N;
+  let gx = exp(g, x) in
+  out(c, (gx));
+  in(c, (gy: Zp));
+  insert finalA(exp(gy, x)); 
+  0.
+
+(* Entity B *)
+let process_B =
+  in(c, (gx: Zp));
+  new y: N;
+  let gy = exp(g, y) in
+  out(c, (gy));
+  insert finalB(exp(gx, y)); 
+  0.
+
+(* Process *)
+process (!process_A | !process_B | !agreement)

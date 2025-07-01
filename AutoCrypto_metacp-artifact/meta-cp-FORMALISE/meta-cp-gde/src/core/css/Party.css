@@ -1,0 +1,11 @@
+/**
+ * Author: Roberto Metere
+ */
+div.party {
+  border: 0;
+  padding: 0;
+  margin: 5px 10px;
+  width: 120px;
+  display: inline-block;
+  text-align: center;
+}

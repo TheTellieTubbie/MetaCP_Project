@@ -1,0 +1,14 @@
+/**
+ * Author: Roberto Metere
+ */
+div.algorithmbox {
+  padding: 5px;
+}
+
+div.algorithmbox .list-group-item {
+  padding: 0;
+}
+
+div.algorithmbox-accepting {
+  background-color: green;
+}

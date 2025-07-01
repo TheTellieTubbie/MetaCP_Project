@@ -1,0 +1,28 @@
+#!/bin/bash
+
+print_usage() {
+  printf "Syntax: $0 <xml-file-to-validate>\n"
+}
+# ----------------------------------------------------------------------
+
+# Validity check
+dtd_test() {
+  DTDTEST=$(xmllint --valid $1 2>&1 > /dev/null)
+  if [ $? -gt 0 ]
+  then
+    printf "$1: Document format is incorrect. Errors found:\n\t----\n$DTDTEST\n"
+    return 2
+  else
+    printf "Document "$1" is well formatted.\n"
+    return 0
+  fi
+}
+# ----------------------------------------------------------------------
+
+if [ "$1" == "" ]
+then
+  print_usage
+  exit 1
+fi
+
+dtd_test "$1"

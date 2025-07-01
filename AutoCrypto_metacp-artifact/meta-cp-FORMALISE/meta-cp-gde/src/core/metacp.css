@@ -1,0 +1,31 @@
+/**
+ * Author: Roberto Metere
+ * 
+ * Single-point CSS
+ */
+@import url("css/MetaCP.css");
+@import url("css/MainBar.css");
+@import url("css/ModelBox.css");
+@import url("css/ToolBox.css");
+@import url("css/Tool.css");
+@import url("css/Protocol.css");
+@import url("css/AlgorithmBox.css");
+@import url("css/Party.css");
+@import url("css/PreBox.css");
+@import url("css/EventBox.css");
+@import url("css/PostBox.css");
+@import url("css/Message.css");
+@import url("css/Finalise.css");
+@import url("css/KnowledgeElement.css");
+@import url("css/Knowledge.css");
+@import url("css/ModalDialog.css");
+
+.drag-accepting {
+  background-color: #88ff99;
+  opacity: 0.5;
+}
+
+.drag-over {
+  background-color: #88ff99;
+  opacity: 1;
+}

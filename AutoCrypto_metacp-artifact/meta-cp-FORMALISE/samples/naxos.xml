@@ -1,0 +1,247 @@
+<!DOCTYPE model SYSTEM "../meta-cp.dtd">
+<model version="0.1">
+  <!-- Function provided by the builtin -->
+  <builtin class="diffie-hellman">
+    <function id="exp" arity="2" builtin="diffie-hellman"></function>
+    <function id="g" builtin="diffie-hellman"></function>
+  </builtin>
+  <builtin class="symmetric-encryption">
+    <function id="enc" arity="2" builtin="symmetric-encryption"></function>
+    <function id="dec" arity="2" builtin="symmetric-encryption"></function>
+  </builtin>
+  <builtin class="asymmetric-encryption">
+    <function id="aenc" arity="2" builtin="asymmetric-encryption"></function>
+    <function id="adec" arity="2" builtin="asymmetric-encryption"></function>
+  </builtin>
+  <builtin class="hashing">
+    <function id="hash" arity="1" builtin="hashing"></function>
+  </builtin>
+   <customfunctions>
+    <function id="h1"></function> <!-- arity=1 -->
+    <function id="h2"></function> <!-- arity=1 -->
+  </customfunctions>
+
+  <declarations>
+    <declaration variable="kR"></declaration>
+    <declaration variable="kI"></declaration>
+    <declaration variable="exI"></declaration>
+    <declaration variable="exR"></declaration>
+    <declaration variable="hkI"></declaration>
+    <declaration variable="hkR"></declaration>
+    <declaration variable="pkI"></declaration>
+    <declaration variable="pkR"></declaration>
+    <declaration variable="pKexR"></declaration>
+    <declaration variable="pKexI"></declaration>
+    <declaration variable="hkIlkR"></declaration>
+    <declaration variable="hkRlkI"></declaration>
+    <declaration variable="hkIexR"></declaration>
+    <declaration variable="hkRexI"></declaration>
+  </declarations>
+
+  <protocol name="Naxos Protocol">
+    <entity id="I" name="I" desc="Initiator">
+    </entity>
+    <entity id="R" name="R" desc="Responded">
+    </entity>
+
+    <message id="m-1" from="I" to="R" channel="insecure">
+      <rule id="r-1-sender">
+        <pre>
+          <fact id="eskI" name="eskI" type="fresh"><comment>exponent from N</comment></fact>
+          <fact id="lkI" name="lkI" type="fresh"><comment>exponent from N</comment></fact>
+          <assignment variable="exI">
+            <application function="h1">
+              <argument id="eskI" type="fresh"></argument>
+              <argument id="lkI" type="fresh"></argument>
+            </application>
+          </assignment>
+          <assignment variable="hkI">
+            <application function="exp">
+              <argument id="g" type="constant"></argument>
+              <argument id="exI" ></argument>
+            </application>
+          </assignment>
+          <assignment variable="pkI">
+            <application function="exp">
+              <argument id="g" type="constant"></argument>
+              <argument id="lkI" type="fresh" ></argument>
+            </application>
+          </assignment>
+
+
+        </pre>
+        <event type="send">
+          <variable id="hkI"></variable>
+          <variable id="pkI"></variable>
+        </event>
+        <post>
+        </post>
+        <comment>send public key to other party</comment>
+      </rule>
+      
+      <rule id="r-1-receiver">
+        <pre></pre>
+        <event type="receive">
+          <variable id="hkI"></variable>
+          <variable id="pkI"></variable>
+        </event>
+        <post></post>
+      </rule>
+    </message>
+
+    <message id="m-2" from="R" to="I" channel="insecure">
+      <knowledge entity="R">
+        <variable id="hkI"></variable>
+        <variable id="pkI"></variable>
+      </knowledge>
+      <knowledge entity="I">
+        <variable id="eskI" type="fresh"></variable>
+        <variable id="lkI"  type="fresh"></variable>
+        <variable id="hkI"></variable>
+        <variable id="pkI"></variable>
+      </knowledge>
+      <rule id="r-2-sender">
+        <pre>
+          <fact id="eskR" name="eskR" type="fresh"><comment>exponent from N</comment></fact>
+          <fact id="lkR" name="lkR" type="fresh"><comment>exponent from N</comment></fact>
+          
+          <assignment variable="exR">
+            <application function="h1">
+              <argument id="eskR" type="fresh"></argument>
+              <argument id="lkR" type="fresh"></argument>
+            </application>
+          </assignment>
+          <assignment variable="hkR">
+            <application function="exp">
+              <argument id="g" type="constant"></argument>
+              <argument id="exR" ></argument>
+            </application>
+          </assignment>
+
+          <assignment variable="pKexR">
+            <application function="exp">
+              <argument id="pkI" ></argument>
+              <argument id="exR" ></argument>
+            </application>
+          </assignment>
+          <assignment variable="hkIlkR">
+            <application function="exp">
+              <argument id="hkI" ></argument>
+              <argument id="lkR" type="fresh"></argument>
+            </application>
+          </assignment>
+          <assignment variable="hkIexR">
+            <application function="exp">
+              <argument id="hkI" ></argument>
+              <argument id="exR" ></argument>
+            </application>
+
+          </assignment>
+          <assignment variable="kR">
+            <application function="h2">
+              <argument id="pKexR" ></argument>
+              <argument id="hkIlkR" ></argument>
+              <argument id="hkIexR" ></argument>
+              <argument id="I" type="entity"></argument><!--type="identity"-->
+              <argument id="R" type="entity"></argument><!--type="identity"-->
+            </application>
+          </assignment>
+
+          <assignment variable="pkR">
+            <application function="exp">
+              <argument id="g" type="constant"></argument>
+              <argument id="lkR" type="fresh" ></argument>
+            </application>
+          </assignment>
+
+        </pre>
+        <event type="send">
+          <variable id="hkR"></variable>
+          <variable id="pkR"></variable>
+        </event>
+        <post>
+        </post>
+        <comment>send public key to other party</comment>
+      </rule>
+      
+      <rule id="r-2-receiver">
+        <pre></pre>
+        <event type="receive">
+          <variable id="hkR"></variable>
+          <variable id="pkR"></variable>
+        </event>
+        <post></post>
+      </rule>
+    </message>
+
+    <message id="m-3" from="I" to="R" channel="insecure">
+        <knowledge entity="I">
+        <variable id="lkI" type="fresh"></variable>
+        <variable id="pkI"></variable>
+        <variable id="eskI"></variable>
+        <variable id="hkI"></variable>
+        <variable id="hkR"></variable>
+        <variable id="pkR"></variable>
+      </knowledge>
+      
+      <rule id="r-3-sender">
+        <pre>
+          <assignment variable="hkRlkI">
+            <application function="exp">
+              <argument id="hkR" ></argument>
+              <argument id="lkI" type="fresh"></argument>
+            </application>
+          </assignment>
+          <assignment variable="pKexI">
+            <application function="exp">
+              <argument id="pkR" ></argument>
+              <argument id="exI" ></argument>
+            </application>
+          </assignment>
+          <assignment variable="hkRexI">
+            <application function="exp">
+              <argument id="hkR" ></argument>
+              <argument id="exI" ></argument>
+            </application>
+
+
+          </assignment>
+          <assignment variable="kI">
+            <application function="h2">
+              <argument id="hkRlkI" ></argument>
+              <argument id="pKexI" ></argument>
+              <argument id="hkRexI" ></argument>
+              <argument id="I" type="entity"></argument><!--type="identity"-->
+              <argument id="R" type="entity"></argument><!--type="identity"-->
+            </application>
+          </assignment>
+        </pre>
+        <event type="compute">
+            <argument id="kI" ></argument>
+        </event>
+        <post>
+        </post>
+        <comment>send public key to other party</comment>
+      </rule>
+      
+      <!-- <rule id="r-1-receiver">
+        <pre></pre>
+        <event type="receive">
+          <variable id="hkI"></variable>
+          <variable id="pkI"></variable>
+        </event>
+        <post></post>
+      </rule> -->
+    </message>
+    <properties>
+          <authentication integrity="I" towards="R"></authentication>
+          <authentication integrity="I" towards="R"></authentication>
+          <confidentiality>
+            <secret variable="kI">
+              <allowed entity="I"></allowed>
+              <allowed entity="R"></allowed>
+            </secret>
+          </confidentiality>
+    </properties>
+  </protocol>
+</model>

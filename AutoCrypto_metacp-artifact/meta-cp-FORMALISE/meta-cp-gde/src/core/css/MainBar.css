@@ -1,0 +1,11 @@
+/**
+ * Author: Roberto Metere
+ */
+div.navbar {
+  border: solid 2px red;
+  padding: 5px;
+}
+
+.navbar-brand > img {
+  margin-right: 7px;
+}

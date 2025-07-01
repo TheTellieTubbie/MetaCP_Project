@@ -1,0 +1,21 @@
+/**
+ * Author: Roberto Metere
+ */
+div.protocol {
+  border: 0;
+  padding: 5px;
+  margin-top: 10px;
+}
+
+div.protocol div.parties {
+  text-align: center;
+}
+
+div.protocol div.messages {
+  padding-bottom: 20px;
+}
+
+
+div.protocol div.finalise {
+  text-align: center;
+}

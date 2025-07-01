@@ -1,0 +1,32 @@
+/**
+ * Author: Roberto Metere
+ */
+div.knowledge {
+}
+
+div.party div.knowledge-buttons {
+  text-align: left;
+  width: 100%;
+}
+
+div.party div.knowledge-buttons > .knowledge-btn-mumble {
+  border-radius: 50%;
+}
+
+div.party div.knowledge-buttons > span.knowledge-button-mumble {
+  color: #17a2b8;
+}
+
+div.party div.knowledge-buttons > span.knowledge-button-mumble > svg:first-child {
+  height: 10px;
+}
+
+div.party div.knowledge-buttons > span.knowledge-button-mumble > svg:last-child {
+  width: 5px;
+  height: 5px;
+  margin-bottom: -2px;
+}
+
+div.knowledge .list-group-item {
+  padding: 0;
+}

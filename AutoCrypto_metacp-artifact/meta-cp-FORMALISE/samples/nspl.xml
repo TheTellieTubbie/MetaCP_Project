@@ -1,0 +1,231 @@
+<!DOCTYPE model SYSTEM "../meta-cp.dtd">
+<model version="0.1">
+  <!-- Function provided by the builtin -->
+  <builtin class="diffie-hellman">
+    <function id="exp" arity="2" builtin="diffie-hellman"></function>
+    <function id="g" builtin="diffie-hellman"></function>
+  </builtin>
+  <builtin class="symmetric-encryption">
+    <function id="enc" arity="2" builtin="symmetric-encryption"></function>
+    <function id="dec" arity="2" builtin="symmetric-encryption"></function>
+  </builtin>
+  <builtin class="asymmetric-encryption">
+    <function id="aenc" arity="2" builtin="asymmetric-encryption"></function>
+    <function id="adec" arity="2" builtin="asymmetric-encryption"></function>
+    <function id="keygen" arity="0" builtin="asymmetric-encryption"></function>
+    <function id="publicKey" arity="1" builtin="asymmetric-encryption"></function>
+    <function id="privateKey" arity="1" builtin="asymmetric-encryption"></function>
+  </builtin>
+  <builtin class="hashing">
+    <function id="hash" arity="1" builtin="hashing"></function>
+  </builtin>
+  <builtin class="pairing">
+    <function id="tuple" arity="n" builtin="pairing"></function>
+    
+  </builtin>
+  
+  <declarations>
+    <declaration variable="one" entity="I"></declaration>  
+    <declaration variable="two" entity="R"></declaration>  
+    <declaration variable="three" entity="I"></declaration>  
+    <declaration variable="m1" entity="I"></declaration>  
+    <declaration variable="m2" entity="R"></declaration>  
+    <declaration variable="m3" entity="I"></declaration>  
+    <declaration variable="kI" entity="I"></declaration>  
+    <declaration variable="kR" entity="R"></declaration>  
+    <declaration variable="skI" entity="I"></declaration>  
+    <declaration variable="skR" entity="R"></declaration>  
+    <declaration variable="pkI" entity="I"></declaration>  
+    <declaration variable="pkR" entity="R"></declaration>  
+  </declarations>
+  
+  <protocol name="Needham Schroeder Protocol">
+    <description>Authenticating Two Parties</description>
+    
+    <entity id="I" name="I" desc="Initiator">
+      <knowledge entity="I">
+         <assignment variable="kI">
+            <application function="keyGenerator">
+            </application>
+          </assignment>
+         <assignment variable="skI">
+            <application function="privateKey">
+              <argument id="kI"></argument>
+            </application>
+         </assignment>
+         <assignment variable="pkI">
+           <application function="publicKey">
+                <argument id="kI"></argument>
+            </application>
+          </assignment>
+          <variable id="pkR"></variable>
+      </knowledge>
+    </entity>
+    <entity id="R" name="R" desc="Responder">
+      <knowledge entity="R">
+         <assignment variable="kR">
+            <application function="keyGenerator">
+            </application>
+          </assignment>
+         <assignment variable="skR">
+            <application function="privateKey">
+                <argument id="kR"></argument>
+            </application>
+        </assignment>
+         <assignment variable="pkR">
+           <application function="publicKey">
+                <argument id="kR"></argument>
+            </application>
+          </assignment>
+          <variable id="pkI"></variable>
+      </knowledge>
+    </entity>
+    <message id="m-1" from="I" to="R" channel="insecure">
+      <rule id="r-1-sender">
+        <pre>
+          <fact id="ni" name="ni" type="fresh"><comment>exponent from N</comment></fact>
+         <assignment variable="m1">
+            <application function="aenc">
+                <application function="tuple">
+                    <argument id="one" type="constant"></argument>
+                    <argument id="ni" type="fresh"></argument>
+                    <argument id="I" type ="entity"></argument>
+                </application>
+              <argument id="pkR"></argument>
+            </application>
+          </assignment>
+        </pre>
+        <event type="send">
+          <variable id="m1"></variable>
+        </event>
+        <post>
+        </post>
+        <comment>send public key to other party</comment>
+      </rule>
+      <rule id="r-1-receiver">
+        <pre>
+            <assignment variable="m1">
+            <application function="aenc">
+                <application function="tuple">
+                    <argument id="one" type="constant"></argument>
+                    <argument id="ni"></argument>
+                    <argument id="I"></argument>
+                </application>
+              <argument id="pkR"></argument>
+            </application>
+          </assignment>
+        </pre>
+        <event type="receive">
+          <variable id="m1"></variable>
+        </event>
+        <post></post>
+      </rule>
+    </message>
+    
+    <message id="m-2" from="R" to="I" channel="insecure">
+      <knowledge entity="I">
+        <variable id="ni" type="fresh"></variable>
+        <variable id="pkR"></variable>
+      </knowledge>
+      <knowledge entity="R">
+        <variable id="pkI"></variable>
+        <variable id="one" type="constant"></variable>
+        <variable id="ni"></variable>
+        <variable id="I"></variable>
+      </knowledge>
+      <rule id="r-2-sender">
+        <pre>
+          <fact id="nr" name="nr" type="fresh"><comment>exponent from N</comment></fact>
+          <assignment variable="m2">
+              <application function="aenc">
+                  <application function="tuple">
+                      <argument id="two" type="constant"></argument>
+                      <argument id="ni"></argument>
+                      <argument id="nr" type="fresh"></argument>
+                      <argument id="R" type="entity"></argument>
+                  </application>
+                <argument id="pkI"></argument>
+              </application>
+            </assignment>
+        </pre>
+        <event type="send">
+          <variable id="m2"></variable>
+        </event>
+        <post>
+        </post>
+        <comment>send public key to other party</comment>
+      </rule>
+      <rule id="r-2-receiver">
+        <pre></pre>
+        <event type="receive">
+          <variable id="m2"></variable>
+        </event>
+        <post></post>
+      </rule>
+    </message>
+    <message id="m-3" from="I" to="R" channel="insecure">
+      <knowledge entity="I">
+        <variable id="ni" type="fresh"></variable>
+        <variable id="pkR"></variable>
+        <variable id="nr"></variable>
+        <variable id="two" type="constant"></variable>
+        <variable id="R" type="entity"></variable>
+      </knowledge>
+      <knowledge entity="R">
+        <variable id="pkI"></variable>  
+        <variable id="one" type="constant"></variable>
+        <variable id="ni"></variable>
+        <variable id="I"></variable>
+        <variable id="nr"></variable>
+        <variable id="two" type="constant"></variable>
+      </knowledge>
+      <rule id="r-3-sender">
+        <pre>
+          <assignment variable="m3">
+             <application function="aenc">
+                 <application function="tuple">
+                     <argument id="three" type="constant"></argument>
+                     <argument id="nr"></argument>
+                 </application>
+               <argument id="pkR"></argument>
+             </application>
+          </assignment>
+        </pre>
+        <event type="send">
+          <variable id="m3"></variable>
+        </event>
+        <post>
+        </post>
+        <comment>send public key to other party</comment>
+      </rule>
+      <rule id="r-3-receiver">
+        <pre>
+        <assignment variable="m3">
+             <application function="aenc">
+                 <application function="tuple">
+                     <argument id="three" type="constant"></argument>
+                     <argument id="nr"></argument>
+                 </application>
+               <argument id="pkR"></argument>
+             </application>
+          </assignment>  
+        </pre>
+        <event type="receive">
+          <variable id="m3"></variable>
+        </event>
+        <post></post>
+      </rule>
+    </message>
+    
+    <finalise entity="I" lastmessage="m-2">
+    </finalise>
+    
+    <finalise entity="R" lastmessage="m-2">
+    </finalise>
+    
+    <properties>
+      <authentication integrity="I" towards="R"></authentication>
+      <authentication integrity="R" towards="I"></authentication>
+    </properties>
+  </protocol>
+</model>

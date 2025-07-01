@@ -1,0 +1,60 @@
+/*
+ * This script has been automatically created by Meta-CP
+ */
+theory METACP_PROTOCOL
+begin
+
+builtins: diffie-hellman, asymmetric-encryption, hashing, symmetric-encryption, signing, bilinear-pairing, xor, multiset, revealing-signing
+
+functions: p/0
+
+rule Register_pk:
+  [ Fr(~skA) ]
+  -->
+  [ !SK($A, ~skA), !PK($A, pk(~skA)), Out(pk(~skA)) ]
+
+rule Reveal_ltk:
+  [ !Ltk(A, ltkA) ] --[ RevLtk(A)    ]-> [ Out(ltkA) ]
+
+
+/* Exchange a long term secret key */
+
+  rule M_1_Sender:
+    let 
+        gx = exp('g',~x) 
+        
+    in
+    [ Fr(~x)
+       ]
+--[ Send_M_1($A,$B,<'B','A',<gx>>) ]->
+    [ Out(<gx>),Storage_M_1_Sender($A,$B,'g',~x,gx) ]
+   
+rule M_1_Receiver:
+          [ In(<gx>)]
+        --[ Receive_M_1($B,$A,<'B','A',<gx>>) ]-> 
+        [ Storage_M_1_Receiver($B,$A,'g',gx) 
+        ]
+  rule M_2_Sender:
+    let 
+        gy = exp('g',~y) 
+        
+    in
+    [ Fr(~y)
+      ,Storage_M_1_Receiver($B,$A,'g',gx) ]
+--[ Send_M_2($B,$A,<'A','B',<gy>>) ]->
+    [ Out(<gy>),Storage_M_2_Sender($B,$A,'g',gx,~y,gy) ]
+   
+rule M_2_Receiver:
+          [ In(<gy>),Storage_M_1_Sender($A,$B,'g',~x,gx)]
+        --[ Receive_M_2($A,$B,<'A','B',<gy>>) ]-> 
+        [ Storage_M_2_Receiver($A,$B,'g',~x,gx,gy) 
+        ]
+lemma executable_protocol:
+  exists-trace
+  "
+     Ex A B m_1 #a #b m_2 #c #d.
+  Send_M_1(A,B,m_1) @ #a & Receive_M_1(B,A,m_1) @ #b & 
+  Send_M_2(B,A,m_2) @ #c & Receive_M_2(A,B,m_2) @ #d
+  "
+      
+end

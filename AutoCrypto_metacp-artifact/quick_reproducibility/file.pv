@@ -1,0 +1,70 @@
+(*
+ * This script has been automatically created by Meta-CP
+ * 
+ * Modeller: Meta-CP
+ * Expert Refiner: |your-name-or-your-group-whatever|
+ * Date: |today?|
+ * 
+ * Description: Authenticating Two Parties
+ *)
+set attacker = active.
+
+type host.
+type N.
+type Zp.
+type S.
+type P.
+type C.
+type KP.
+type KS.
+const pI: P.
+        
+const pR: P.
+        
+fun aenc(KP, P): C.
+fun pk(KS): KP.
+fun concat(P, P): P.
+fun fst(P): P.
+fun snd(P): P.
+
+const skI: KS [private].
+const pkI: KP.
+const skR: KS [private].
+const pkR: KP.
+reduc forall m: P, k: KS; adec(k, aenc(pk(k), m)) = m.
+
+equation pk(skI) = pkI.
+equation pk(skR) = pkR.
+
+(* Insecure channel *)
+free c: channel.
+
+(* Entities *)
+const I: host.
+const R: host.
+
+(* Correctness *)
+
+(* Entity I *)
+let process_I =
+  new ni: P;
+  let m1 = aenc(pkR, concat(ni, pI)) in
+  out(c, (m1));
+  in(c, (m2: C));
+  let nr = fst(snd(adec(skI, m2))) in
+  let m3 = aenc(pkR, concat(nr, pR)) in
+  out(c, (m3));
+  0.
+
+(* Entity R *)
+let process_R =
+  in(c, (m1: C));
+  new nr: P;
+  let ni = fst(adec(skR, m1)) in
+  let m2 = aenc(pkI, concat(ni, concat(nr, pR))) in
+  out(c, (m2));
+  in(c, (m3: C));
+  0.
+
+(* Process *)
+process (!process_I | !process_R)

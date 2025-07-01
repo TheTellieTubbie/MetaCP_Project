@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!ELEMENT model (sets*, customfunctions*,declarations*, protocol) >
+    <!ATTLIST model version CDATA "0.1" >
+    <!ELEMENT sets (set+) >
+        <!ELEMENT set (set*) >
+            <!ATTLIST set id ID #REQUIRED >
+            <!ATTLIST set hint CDATA "" > <!-- this may be used as interpretation hint -->
+            <!ATTLIST set tex CDATA "" >
+            <!ATTLIST set description CDATA "" >
+        <!ELEMENT function (argset+) >
+            <!ATTLIST function id ID #REQUIRED >
+            <!ATTLIST function arity CDATA "0" > <!-- default is constant -->
+            <!ATTLIST function tex CDATA "" >
+            <!ATTLIST function hint CDATA "" > <!-- this may be used as interpretation hint -->
+            <!ATTLIST function notation (plain|infix|corner-ne|application) "plain" >
+    <!ELEMENT argset (#PCDATA) >
+        <!ATTLIST argset set IDREF #REQUIRED >
+    <!ELEMENT customfunctions (function+) >
+    <!ELEMENT customequations (equation+) >
+    <!ELEMENT equation (#PCDATA) >
+        <!ATTLIST equation id ID #REQUIRED >
+    <!ELEMENT customrestrictions (restriction+) > 
+        <!ELEMENT restriction (#PCDATA) >
+            <!ATTLIST restriction id ID #REQUIRED >
+    <!ELEMENT declarations (declaration*) >
+      <!ELEMENT declaration (#PCDATA) >
+          <!ATTLIST declaration variable ID #REQUIRED >
+          <!ATTLIST declaration set IDREF #REQUIRED >
+          <!ATTLIST declaration entity IDREF #REQUIRED >
+          <!ATTLIST declaration label CDATA #IMPLIED >
+          <!ATTLIST declaration tex CDATA #IMPLIED >
+    <!ELEMENT protocol (description?, entity+, message+, finalise*, properties+) >
+        <!ATTLIST protocol name CDATA "protocol" >
+        <!ELEMENT description (#PCDATA) > <!-- CDATA encapsulation -->
+        <!ELEMENT entity (knowledge?) >
+            <!ATTLIST entity id ID #REQUIRED >
+            <!ATTLIST entity name CDATA #REQUIRED >
+            <!ATTLIST entity desc CDATA "party" >
+            <!ELEMENT knowledge (variable+) >
+                <!ATTLIST knowledge entity IDREF #REQUIRED >
+        <!ELEMENT message (knowledge*, pre, event, channel, event, post, comment?) >
+            <!ATTLIST message id ID #REQUIRED >
+            <!ATTLIST message from IDREF #REQUIRED >
+            <!ATTLIST message to IDREF #REQUIRED >
+            <!ELEMENT channel (assignment*) >
+              <!ATTLIST channel security (insecure|authenticated-sender|authenticated-recipient|secure) "insecure" >
+            <!ELEMENT pre (assignment*) >
+            <!ELEMENT event (variable*) >
+              <!ATTLIST event type (send|receive) "send" >
+            <!ELEMENT post (assignment*) >
+            <!ELEMENT comment (#PCDATA) >
+              <!ELEMENT assignment (((variable|application|tuple)|set?), comment?) >
+                <!ATTLIST assignment variable IDREF #REQUIRED >
+                <!ATTLIST assignment type (deterministic|probabilistic) "deterministic" >
+              <!ELEMENT variable (#PCDATA) >
+                <!ATTLIST variable id IDREF #REQUIRED >
+                <!ATTLIST variable type (nonce|constant| entity| variable) "variable"  >
+              <!ELEMENT application (application|argument)* >
+                <!ATTLIST application function IDREF #REQUIRED >
+                  <!ELEMENT argument (#PCDATA) >
+                    <!ATTLIST argument id IDREF #REQUIRED >
+                    <!ATTLIST argument type (nonce|constant| entity |variable) "variable" >
+        <!ELEMENT finalise (knowledge?,assignment*) >
+            <!ATTLIST finalise entity IDREF #REQUIRED >
+            <!ATTLIST finalise lastmessage IDREF #REQUIRED >
+        <!ELEMENT properties (securityparameter*, correctness?, authentication*, confidentiality*) >
+            <!ELEMENT securityparameter (#PCDATA) >
+                <!ATTLIST securityparameter id ID #REQUIRED >
+            <!ELEMENT correctness (application+) >
+            <!ELEMENT authentication (#PCDATA) >
+                <!ATTLIST authentication integrity IDREF #REQUIRED >
+                <!ATTLIST authentication towards IDREF #REQUIRED >
+            <!ELEMENT confidentiality (secret+) >
+                <!ELEMENT secret (allowed*) >
+                    <!ATTLIST secret variable CDATA #REQUIRED >
+                    <!ELEMENT allowed (#PCDATA) >
+                        <!ATTLIST allowed entity IDREF #REQUIRED >
+                        <!ATTLIST allowed atmessage IDREF "m-1" >

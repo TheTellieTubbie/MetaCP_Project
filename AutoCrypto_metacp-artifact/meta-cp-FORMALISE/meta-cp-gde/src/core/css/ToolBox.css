@@ -1,0 +1,24 @@
+/**
+ * Author: Roberto Metere
+ */
+div.toolbox {
+  border: solid 1px lightgray;
+  background-color: rgba(255,255,255,0.9);
+  padding: 5px;
+/*   float: left; */
+/*   position: absolute; */
+  min-width: 100px;
+  max-width: 300px;
+  left: 10px;
+  top: 10px;
+}
+
+div.toolbox div.card-header {
+  padding: 0;
+/*   border-bottom: 2px solid lightgray; */
+}
+
+div.toolbox div.btn-toolbar {
+  text-align: right;
+  display: block;
+}

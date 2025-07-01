@@ -1,0 +1,13 @@
+/**
+ * Author: Roberto Metere
+ */
+div.modelbox {
+  padding: 5px;
+}
+
+div.modelbox-empty {
+  border: dashed 2px lightgray;
+  padding: 5px;
+  min-height: 30px;
+  min-width: 80px;
+}
